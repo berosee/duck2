@@ -15,35 +15,6 @@
       padding: 0;
     }
 
-    /* 상단 메뉴 */
-    .nav {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      padding: 15px 0;
-      background: #ffffff;
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .nav a {
-      text-decoration: none;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #666;
-      background: #f1f1f1;
-      transition: 0.3s;
-    }
-
-    .nav a.active {
-      background: #4a7cff;
-      color: #fff;
-    }
-
     /* 플레이어 영역 */
     .player-box {
       max-width: 720px;
@@ -135,12 +106,6 @@
 
 <body>
 
-<div class="nav">
-  <a href="?cat=old" id="nav-old">OLD</a>
-  <a href="?cat=enka" id="nav-enka">ENKA</a>
-  <a href="?cat=jazz" id="nav-jazz">JAZZ</a>
-</div>
-
 <div class="player-box">
   <div class="player-ratio">
     <div id="player"></div>
@@ -156,55 +121,39 @@
 </div>
 
 <script>
-/* 1. 데이터 정의 */
-const playlists = {
-  old: [
+/* 1. 단일 통합 데이터 정의 */
+const songs = [
+  // Old
   { title: "🎵 Green Green Grass of Home", id: "uoo3P_xGYog" },
-    { title: "🎵 the house of the rising sun", id: "GZqX8kg4rSQ" },
-    { title: "🎵 Cotton Fields (1969)", id: "AlSjx6F5Pl8" },
-    { title: "🎵 Country Boots Music", id: "eQXVFUc4eDw" },
-    { title: "🎵 Red River Valley", id: "70PwqEHGlb4" },
-    { title: "🎵 Tennessee Waltz ( 1959 )", id: "5GWDgirgsq4" },
-    { title: "🎵 Sunset Country Classic", id: "XFKcH4446Vw" },
-    { title: "🎵 Take Me Home Country Roads", id: "iK0vsVRWsww" },
-    { title: "🎵 Do That To Me One More Time", id: "z_XfJyrNLRQ" },
-     { title: "🎵 클래식 컨트리 음악 플레이리스트 히트곡", id: "QOmIkPyHfOE" },
-    { title: "🎵 Best Country Heartland Songs", id: "8VO67jNHLpA" }
-  ],
-  enka: [
-    { title: "🎵 린 - 인생외길", id: "rfjffhNxdLQ" },
-    { title: "🎵 都はるみ 裏町ごころ", id: "vnHDs5DlAG0" },
-    { title: "🎵 린 X 아즈마 아키", id: "vgPvhr7ZWbw" },
-    { title: "🎵 雪中花 伍代夏子", id: "B6WmSUodgRQ" }
-  ],
-  jazz: [
-   { title: "🎷 번지없는 주막", id: "Z9vzsUxvsEg" },
-    { title: "🎷 영시의 이별", id: "29JJnC_L3OE" },
-    { title: "🎷 배호 모음집", id: "dEc-U2hgd6A" },
-    { title: "🎷 꿈꾸는 백마강", id: "50-PlZVG7aA" },
-    { title: "🎷 고향아줌마", id: "6wvUMP1ZS7U" }
-  ]
-};
+  { title: "🎵 the house of the rising sun", id: "GZqX8kg4rSQ" },
+  { title: "🎵 Cotton Fields (1969)", id: "AlSjx6F5Pl8" },
+  { title: "🎵 Country Boots Music", id: "eQXVFUc4eDw" },
+  { title: "🎵 Red River Valley", id: "70PwqEHGlb4" },
+  { title: "🎵 Tennessee Waltz ( 1959 )", id: "5GWDgirgsq4" },
+  { title: "🎵 Sunset Country Classic", id: "XFKcH4446Vw" },
+  { title: "🎵 Take Me Home Country Roads", id: "iK0vsVRWsww" },
+  { title: "🎵 Do That To Me One More Time", id: "z_XfJyrNLRQ" },
+  { title: "🎵 클래식 컨트리 음악 플레이리스트 히트곡", id: "QOmIkPyHfOE" },
+  { title: "🎵 Best Country Heartland Songs", id: "8VO67jNHLpA" },
+  // Enka
+  { title: "🎵 린 - 인생외길", id: "rfjffhNxdLQ" },
+  { title: "🎵 都はるみ 裏町ごころ", id: "vnHDs5DlAG0" },
+  { title: "🎵 린 X 아즈마 아키", id: "vgPvhr7ZWbw" },
+  { title: "🎵 雪中花 伍代夏子", id: "B6WmSUodgRQ" },
+  // Jazz
+  { title: "🎷 번지없는 주막", id: "Z9vzsUxvsEg" },
+  { title: "🎷 영시의 이별", id: "29JJnC_L3OE" },
+  { title: "🎷 배호 모음집", id: "dEc-U2hgd6A" },
+  { title: "🎷 꿈꾸는 백마강", id: "50-PlZVG7aA" },
+  { title: "🎷 고향아줌마", id: "6wvUMP1ZS7U" }
+];
 
-/* 2. 현재 카테고리 파악 (URL의 ?cat= 부분 읽기) */
-function getCategory() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("cat") || "old"; // 기본값 old
-}
-
-const currentCategory = getCategory();
-const currentListData = playlists[currentCategory] || playlists["old"];
-
-/* 3. 메뉴 활성화 표시 */
-const activeNav = document.getElementById("nav-" + currentCategory);
-if (activeNav) activeNav.classList.add("active");
-
-/* 4. 플레이리스트 화면 생성 */
+/* 2. 플레이리스트 화면 생성 */
 let videoIds = [];
 let currentIndex = 0;
 const table = document.getElementById("playlist");
 
-currentListData.forEach((song, index) => {
+songs.forEach((song, index) => {
   videoIds.push(song.id);
   const tr = document.createElement("tr");
   tr.innerHTML = `<td>${song.title}</td>`;
@@ -212,7 +161,7 @@ currentListData.forEach((song, index) => {
   table.appendChild(tr);
 });
 
-/* 5. 유튜브 API 관련 */
+/* 3. 유튜브 API 관련 */
 var player;
 
 function onYouTubeIframeAPIReady() {
